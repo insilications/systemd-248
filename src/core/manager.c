@@ -1636,8 +1636,6 @@ int manager_startup(Manager *m, FILE *serialization, FDSet *fds) {
         if (r < 0)
                 return r;
 
-        manager_preset_all(m);
-
         lookup_paths_log(&m->lookup_paths);
 
         {
