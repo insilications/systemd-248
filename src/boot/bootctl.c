@@ -496,10 +496,13 @@ static int version_check(int fd_from, const char *from, int fd_to, const char *t
         r = get_file_version(fd_to, &b);
         if (r < 0)
                 return r;
-        if (r == 0 || compare_product(a, b) != 0)
-                return log_notice_errno(SYNTHETIC_ERRNO(EEXIST),
-                                        "Skipping \"%s\", since it's owned by another boot loader.",
-                                        to);
+
+        if (r == 0 || compare_product(a, b) != 0) {
+                if (!compare_product(b, "gummiboot"))
+                        return log_notice_errno(SYNTHETIC_ERRNO(EEXIST),
+                                                "Skipping \"%s\", since it's owned by another boot loader.",
+                                                to);
+        }
 
         if (compare_version(a, b) < 0)
                 return log_warning_errno(SYNTHETIC_ERRNO(ESTALE), "Skipping \"%s\", since a newer boot loader version exists already.", to);
