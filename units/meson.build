@@ -153,6 +153,8 @@ units = [
         ['user.slice',                          ''],
         ['var-lib-machines.mount',              'ENABLE_MACHINED',
          'remote-fs.target.wants/ machines.target.wants/'],
+        ['var-swapfile.swap',                   '',
+         'swap.target.wants/'],
 ]
 
 in_units = [
