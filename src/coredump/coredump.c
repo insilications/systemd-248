@@ -49,6 +49,9 @@
 #include "user-record.h"
 #include "user-util.h"
 
+#undef HAVE_XZ
+#define HAVE_XZ 0
+
 /* The maximum size up to which we process coredumps */
 #define PROCESS_SIZE_MAX ((uint64_t) (2LLU*1024LLU*1024LLU*1024LLU))
 

@@ -33,6 +33,8 @@
 #include "unaligned.h"
 #include "util.h"
 
+#undef HAVE_XZ
+#define HAVE_XZ 0
 #if HAVE_LZ4
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(LZ4F_compressionContext_t, LZ4F_freeCompressionContext, NULL);
 DEFINE_TRIVIAL_CLEANUP_FUNC_FULL(LZ4F_decompressionContext_t, LZ4F_freeDecompressionContext, NULL);
