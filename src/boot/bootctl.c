@@ -61,6 +61,8 @@ static const char *arg_dollar_boot_path(void) {
         return arg_xbootldr_path ?: arg_esp_path;
 }
 
+static bool arg_force = false;
+
 static int acquire_esp(
                 bool unprivileged_mode,
                 uint32_t *ret_part,
@@ -1058,6 +1060,8 @@ static int parse_argv(int argc, char *argv[]) {
         enum {
                 ARG_ESP_PATH = 0x100,
                 ARG_BOOT_PATH,
+                ARG_PRINT_BOOT_PATH,
+                ARG_FORCE,
                 ARG_VERSION,
                 ARG_NO_VARIABLES,
                 ARG_NO_PAGER,
@@ -1067,6 +1071,7 @@ static int parse_argv(int argc, char *argv[]) {
         static const struct option options[] = {
                 { "help",            no_argument,       NULL, 'h'                 },
                 { "version",         no_argument,       NULL, ARG_VERSION         },
+                { "force",           no_argument,       NULL, ARG_FORCE           },
                 { "esp-path",        required_argument, NULL, ARG_ESP_PATH        },
                 { "path",            required_argument, NULL, ARG_ESP_PATH        }, /* Compatibility alias */
                 { "boot-path",       required_argument, NULL, ARG_BOOT_PATH       },
@@ -1118,6 +1123,10 @@ static int parse_argv(int argc, char *argv[]) {
                                 return log_error_errno(SYNTHETIC_ERRNO(EINVAL),
                                                        "--print-boot-path/-x cannot be combined with --print-esp-path/-p");
                         arg_print_dollar_boot_path = true;
+                        break;
+
+                case ARG_FORCE:
+                        arg_force = true;
                         break;
 
                 case ARG_NO_VARIABLES:
@@ -1563,7 +1572,7 @@ static int verb_install(int argc, char *argv[], void *userdata) {
 
         (void) sync_everything();
 
-        if (arg_touch_variables)
+        if (arg_touch_variables && !arg_force)
                 r = install_variables(arg_esp_path,
                                       part, pstart, psize, uuid,
                                       "/EFI/systemd/systemd-boot" EFI_MACHINE_TYPE_NAME ".efi",
@@ -1611,7 +1620,7 @@ static int verb_remove(int argc, char *argv[], void *userdata) {
 
         (void) sync_everything();
 
-        if (!arg_touch_variables)
+        if (!arg_touch_variables || arg_force)
                 return r;
 
         q = remove_variables(uuid, "/EFI/systemd/systemd-boot" EFI_MACHINE_TYPE_NAME ".efi", true);
