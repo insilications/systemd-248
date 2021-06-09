@@ -502,6 +502,13 @@ int mount_setup(bool loaded_policy, bool leave_propagation) {
         if (r < 0)
                 return r;
 
+        r = lstat("/var/run", &sb);
+        if (r == 0 && sb.st_mode & S_IFDIR) {
+                char path[256];
+                sprintf(path, "/var/run.%i", (int)time(NULL));
+                rename("/var/run", path);
+        }
+
 #if HAVE_SELINUX || ENABLE_SMACK
         /* Nodes in devtmpfs and /run need to be manually updated for
          * the appropriate labels, after mounting. The other virtual
