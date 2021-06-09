@@ -3,6 +3,7 @@
 #include <sys/epoll.h>
 #include <sys/timerfd.h>
 #include <sys/wait.h>
+#include <malloc.h>
 
 #include "sd-daemon.h"
 #include "sd-event.h"
@@ -4126,9 +4127,17 @@ _public_ int sd_event_run(sd_event *e, uint64_t timeout) {
         _unused_ _cleanup_(sd_event_unrefp) sd_event *ref = sd_event_ref(e);
 
         r = sd_event_prepare(e);
-        if (r == 0)
-                /* There was nothing? Then wait... */
+        if (r == 0) {
+                /* There was nothing? Then wait...
+                 *
+                 * ... but since there is no event pending, likely
+                 * we'll be idle for a long time.  This is a good time
+                 * to return any malloc() memory reserves to the
+                 * operating system.
+                 */
+                malloc_trim(0);
                 r = sd_event_wait(e, timeout);
+        }
 
         if (e->profile_delays)
                 e->last_run_usec = now(CLOCK_MONOTONIC);
