@@ -3172,6 +3172,7 @@ public_programs += executable(
 public_programs += executable(
         'udevadm',
         udevadm_sources,
+        c_args : ['-O3'],
         include_directories : includes,
         link_with : [libudevd_core],
         dependencies : [versiondep,
