@@ -542,6 +542,11 @@ static int write_temporary_shadow(const char *shadow_path, FILE **tmpfile, char 
                         .sp_flag = ULONG_MAX, /* this appears to be what everybody does ... */
                 };
 
+                /* exempt gdm, sddm, lightdm from locking by default */
+                /* https://github.com/systemd/systemd/issues/13522 */
+                if ((i->uid == 311) || (i->uid == 336) || (i->uid == 308))
+                        n.sp_expire = -1;
+
                 r = putspent_sane(&n, shadow);
                 if (r < 0)
                         return r;
