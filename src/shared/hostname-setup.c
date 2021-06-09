@@ -230,6 +230,43 @@ int hostname_setup(bool really) {
         return r;
 }
 
+int set_first_hostname(void)
+{
+        char h[HOST_NAME_MAX1];
+        h[HOST_NAME_MAX] = '\0';
+        _cleanup_free_ char *n_host = NULL;
+        _cleanup_free_ char *mid = NULL;
+
+        if (access("/etc/hostname", F_OK) == 0) {
+                return 1;
+        }
+
+        if (gethostname(h, HOST_NAME_MAX) != 0) {
+                return 0;
+        }
+
+        if (!streq(h, "clr") && !streq(h, "localhost")) {
+                return 0;
+        }
+
+        if (read_etc_hostname("/etc/machine-id", &mid) != 0) {
+                /* First boot, use transient machine-id until synced */
+                if (read_etc_hostname("/run/machine-id", &mid) != 0) {
+                        return 0;
+                }
+        }
+
+        if (!asprintf(&n_host, "clr-%s", mid)) {
+                return 0;
+        }
+
+        if (sethostname_idempotent(n_host) != 0) {
+                return 1;
+        }
+
+        return 0;
+}
+
 static const char* const hostname_source_table[] = {
         [HOSTNAME_STATIC]    = "static",
         [HOSTNAME_TRANSIENT] = "transient",
