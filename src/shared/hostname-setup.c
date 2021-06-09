@@ -3,6 +3,9 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
+#include <unistd.h>
+#include <string.h>
 #include <sys/utsname.h>
 #include <unistd.h>
 
@@ -18,6 +21,7 @@
 #include "string-table.h"
 #include "string-util.h"
 #include "util.h"
+
 
 static int sethostname_idempotent_full(const char *s, bool really) {
         char buf[HOST_NAME_MAX + 1] = {};
@@ -232,7 +236,7 @@ int hostname_setup(bool really) {
 
 int set_first_hostname(void)
 {
-        char h[HOST_NAME_MAX1];
+        char h[HOST_NAME_MAX + 1];
         h[HOST_NAME_MAX] = '\0';
         _cleanup_free_ char *n_host = NULL;
         _cleanup_free_ char *mid = NULL;
