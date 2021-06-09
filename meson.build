@@ -177,7 +177,6 @@ udevrulesdir = join_paths(udevlibexecdir, 'rules.d')
 udevhwdbdir = join_paths(udevlibexecdir, 'hwdb.d')
 catalogdir = join_paths(prefixdir, 'lib/systemd/catalog')
 kernelinstalldir = join_paths(prefixdir, 'lib/kernel/install.d')
-factorydir = join_paths(datadir, 'factory')
 bootlibdir = join_paths(prefixdir, 'lib/systemd/boot/efi')
 testsdir = join_paths(prefixdir, 'lib/systemd/tests')
 systemdstatedir = join_paths(localstatedir, 'lib/systemd')
@@ -3468,8 +3467,8 @@ subdir('shell-completion/zsh')
 subdir('docs/sysvinit')
 subdir('docs/var-log')
 
-install_subdir('factory/etc',
-               install_dir : factorydir)
+# FIXME: figure out if the warning is true:
+# https://github.com/mesonbuild/meson/wiki/Reference-manual#install_subdir
 
 if install_sysconfdir
         install_data('xorg/50-systemd-user.sh',

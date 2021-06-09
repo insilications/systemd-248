@@ -12,7 +12,7 @@ files = [['README',               ''],
          ['systemd-pstore.conf',  'ENABLE_PSTORE'],
          ['tmp.conf',             ''],
          ['x11.conf',             ''],
-         ['legacy.conf',          'HAVE_SYSV_COMPAT'],
+         ['legacy.conf',          ''],
         ]
 
 foreach pair : files
